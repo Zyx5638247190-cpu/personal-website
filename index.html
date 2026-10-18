@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta
+      name="description"
+      content="冷箭竹的个人站 · 前端工程师，把复杂的东西做得简单，顺便养了一只奶龙。"
+    />
+    <meta name="theme-color" content="#0B0B12" />
+    <title>奶龙小站 · 冷箭竹</title>
+
+    <!-- 首帧前确定主题，避免深色用户看到白屏闪烁；此脚本必须保持内联且位于样式之前 -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('nd:theme');
+          var theme = stored === 'light' || stored === 'dark' ? stored : 'dark';
+          document.documentElement.dataset.theme = theme;
+        } catch (e) {
+          document.documentElement.dataset.theme = 'dark';
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

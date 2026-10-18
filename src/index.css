@@ -1,0 +1,287 @@
+@import "tailwindcss";
+
+/* 用 data-theme 而不是 class 控制深色，方便首屏内联脚本直接写属性 */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme {
+  --font-sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei",
+    "Noto Sans SC", "Segoe UI", sans-serif;
+  /* 圆角规范：卡片 8px，按钮 20px（AGENTS.md 5.2） */
+  --radius-card: 8px;
+  --radius-button: 20px;
+}
+
+/*
+ * 语义 token 映射：组件只写 bg-surface / text-text-muted 这类类名，
+ * 不直接写色值，换主题时只改下面的变量。
+ */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-soft: var(--bg-soft);
+  --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-text-dim: var(--text-dim);
+  --color-primary-300: var(--primary-300);
+  --color-primary-400: var(--primary-400);
+  --color-primary-500: var(--primary-500);
+  --color-primary-600: var(--primary-600);
+  --color-primary-ink: var(--primary-ink);
+  --color-primary-contrast: var(--primary-contrast);
+  --color-primary-glow: var(--primary-glow);
+  /* 错误文案单独走语义色：浅色底上不能用亮红，否则对比度不达标 */
+  --color-danger: var(--danger);
+}
+
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* 唯一主色控制点：改主题从这里开始，并同步 300/400/600 */
+  --primary: #ffca28;
+  --primary-300: #ffe082;
+  --primary-400: #ffd54f;
+  --primary-500: var(--primary);
+  --primary-600: #ffb300;
+  --primary-ink: #ffca28; /* 深色底上的黄色正文可用亮黄 */
+  --primary-contrast: #1a1a22; /* 黄色底上的深色文字 */
+  --primary-glow: rgb(255 202 40 / 0.35);
+  --primary-gradient: linear-gradient(135deg, #ffd54f 0%, #ffca28 50%, #ffb300 100%);
+  --text-gradient: linear-gradient(135deg, #ffd54f 0%, #ffca28 50%, #ffb300 100%);
+
+  --bg: #0b0b12;
+  --bg-soft: #12121c;
+  --surface: #171723;
+  --surface-hover: #1e1e2c;
+  --border: rgb(255 255 255 / 0.08);
+  --border-strong: rgb(255 202 40 / 0.45);
+  --text: #f5f5f7;
+  --text-muted: #a0a0b2;
+  --text-dim: #6e6e80;
+  /* 深色底上的错误文案用浅红，保证 4.5:1 以上 */
+  --danger: #fca5a5;
+  /* 深色弹窗靠描边与内发光分层，不用黑色投影 */
+  --dialog-shadow: 0 0 0 1px var(--border), inset 0 1px 0 rgb(255 255 255 / 0.05);
+  --star-opacity: 1;
+  --star-color: #ffffff;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+
+  --primary: #ffca28;
+  --primary-300: #ffe9a8;
+  --primary-400: #ffd54f;
+  --primary-500: var(--primary);
+  --primary-600: #ffb300;
+  /* 浅色底上亮黄对比度不足，正文改用加深的黄褐色 */
+  --primary-ink: #8a5a00;
+  --primary-contrast: #1a1a22;
+  --primary-glow: rgb(255 179 0 / 0.22);
+  --text-gradient: linear-gradient(135deg, #c98400 0%, #8a5a00 100%);
+
+  --bg: #fffdf7;
+  --bg-soft: #fff8e6;
+  --surface: #ffffff;
+  --surface-hover: #fffaf0;
+  --border: rgb(0 0 0 / 0.08);
+  --border-strong: rgb(176 120 0 / 0.35);
+  --text: #1a1a22;
+  --text-muted: #5c5c6b;
+  --text-dim: #7a7a88;
+  /* 浅色底改用深红，亮红在米白背景上几乎看不清 */
+  --danger: #b42318;
+  /* 浅色模式允许轻量投影，与卡片的层级规范一致 */
+  --dialog-shadow: 0 8px 24px rgb(0 0 0 / 0.06);
+  --star-opacity: 0.35;
+  --star-color: #e0b34a;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* 固定导航高度，锚点定位时留出空间 */
+    scroll-padding-top: 96px;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+    /* 兜底，真正避免横向滚动仍靠布局本身 */
+    overflow-x: clip;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    line-height: 1.25;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background-color: var(--primary-500);
+    color: #1a1a22;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--primary-500);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* 深色下滚动条跟随主题，避免亮色条破坏夜空氛围 */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
+  }
+}
+
+@layer components {
+  .bg-primary-gradient {
+    background-image: var(--primary-gradient);
+  }
+
+  .text-gradient {
+    background-image: var(--text-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .container-page {
+    width: 100%;
+    max-width: 1120px;
+    margin-inline: auto;
+    padding-inline: 24px;
+  }
+
+  @media (min-width: 1024px) {
+    .container-page {
+      padding-inline: 48px;
+    }
+  }
+
+  .card-surface {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+  }
+
+  /* 弹窗阴影按主题切换：深色不用黑色投影，浅色用轻量投影 */
+  .dialog-surface {
+    box-shadow: var(--dialog-shadow);
+  }
+
+  .skip-link {
+    position: fixed;
+    top: 8px;
+    left: 8px;
+    z-index: 100;
+    padding: 10px 16px;
+    border-radius: 8px;
+    background-color: var(--primary-500);
+    color: #1a1a22;
+    font-size: 14px;
+    font-weight: 600;
+    transform: translateY(-200%);
+    transition: transform 0.2s ease;
+  }
+
+  .skip-link:focus-visible {
+    transform: translateY(0);
+  }
+
+  /* 进入视口动画：由 Reveal 组件添加 is-visible */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* 装饰性光斑：品牌黄的径向渐变，避免在组件里写色值 */
+  .hero-glow {
+    background: radial-gradient(circle at 50% 50%, var(--primary-glow), transparent 65%);
+  }
+
+  .cover-glow {
+    background-image: radial-gradient(circle at 30% 20%, rgb(255 202 40 / 0.18), transparent 55%),
+      radial-gradient(circle at 75% 80%, rgb(255 213 79 / 0.12), transparent 50%);
+  }
+
+  .cover-grid {
+    background-image: linear-gradient(var(--text) 1px, transparent 1px),
+      linear-gradient(90deg, var(--text) 1px, transparent 1px);
+    background-size: 24px 24px;
+    opacity: 0.07;
+  }
+
+  .starfield-halo {
+    background: radial-gradient(
+      ellipse 60% 55% at 50% 0%,
+      rgb(255 202 40 / 0.12),
+      transparent 70%
+    );
+  }
+}
+
+@keyframes nd-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes nd-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 尊重系统减少动效偏好：关闭所有装饰性动画 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

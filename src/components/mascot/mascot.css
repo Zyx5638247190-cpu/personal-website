@@ -1,0 +1,91 @@
+/* 奶龙动画：全部只改 transform / opacity，避免触发布局重排 */
+
+.mascot {
+  overflow: visible;
+  flex-shrink: 0;
+}
+
+.mascot-inner {
+  transform-origin: 100px 170px;
+}
+
+.mascot--animated .mascot-inner {
+  animation: mascot-breathe 3s ease-in-out infinite;
+}
+
+.mascot--animated .mascot-eyes {
+  animation: mascot-blink 6s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.mascot--animated .mascot-tail {
+  animation: mascot-sway 4s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: right center;
+}
+
+.mascot--animated .mascot-star {
+  animation: mascot-twinkle 2.6s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* 瞳孔位移由 JS 写入 --look-x / --look-y，范围 -1 ~ 1 */
+.mascot-pupils {
+  transform: translate(calc(var(--look-x, 0) * 3px), calc(var(--look-y, 0) * 3px));
+  transition: transform 0.15s ease-out;
+}
+
+@keyframes mascot-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+@keyframes mascot-blink {
+  0%,
+  92%,
+  100% {
+    transform: scaleY(1);
+  }
+  95% {
+    transform: scaleY(0.1);
+  }
+}
+
+@keyframes mascot-sway {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-6deg);
+  }
+}
+
+@keyframes mascot-twinkle {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(0.92);
+  }
+}
+
+/* 系统开启减少动效时，奶龙保持静止 */
+@media (prefers-reduced-motion: reduce) {
+  .mascot--animated .mascot-inner,
+  .mascot--animated .mascot-eyes,
+  .mascot--animated .mascot-tail,
+  .mascot--animated .mascot-star {
+    animation: none;
+  }
+}
