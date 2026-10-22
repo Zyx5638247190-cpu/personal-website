@@ -6,6 +6,8 @@ import { fileURLToPath, URL } from 'node:url';
 
 // 站点为纯前端 SPA，构建产物直接静态托管
 export default defineConfig({
+  // 相对路径，保证部署到 GitHub Pages 子路径（/personal-website/）时资源不 404
+  base: './',
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
